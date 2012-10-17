@@ -3,10 +3,8 @@ version: ${releaseVersion}.${buildNumber}
 description: Adds a {xp} token to the mmoInfo token list.
 author: mmoMinecraftDev
 website: http://mmo.me.uk
-main: mmo.Info.MMOInfoXP
+main: mmo.Info.mmoInfoXP
 depend: [Spout,mmoCore,mmoInfo]
-
-description: Adds {xp} to the info tokens
 permissions:
   mmo.info.xp:
     description: Allows {xp} to show the current players vanilla experience level

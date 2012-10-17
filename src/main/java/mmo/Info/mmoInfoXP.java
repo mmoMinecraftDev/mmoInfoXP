@@ -25,12 +25,14 @@ import mmo.Core.InfoAPI.MMOInfoEvent;
 import mmo.Core.MMOPlugin;
 import mmo.Core.MMOPlugin.Support;
 import mmo.Core.util.EnumBitSet;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.PluginManager;
 import org.getspout.spoutapi.gui.GenericLabel;
+import org.getspout.spoutapi.gui.InGameHUD;
 import org.getspout.spoutapi.gui.Label;
 import org.getspout.spoutapi.gui.Screen;
 import org.getspout.spoutapi.player.SpoutPlayer;
@@ -38,8 +40,8 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 public final class mmoInfoXP extends MMOPlugin
   implements Listener
 {
-  private HashMap<Player, CustomLabel> widgets = new HashMap();
-
+  private HashMap<Player, CustomLabel> widgets = new HashMap();  
+  
   @Override
 	public EnumBitSet mmoSupport(final EnumBitSet support) {
 	  support.set(Support.MMO_NO_CONFIG);
@@ -62,21 +64,13 @@ public final class mmoInfoXP extends MMOPlugin
         CustomLabel label = (CustomLabel)new CustomLabel().setResize(true).setFixed(true);
         this.widgets.put(player, label);
         event.setWidget(this.plugin, label);
-        event.setIcon("xp.png");     
+        event.setIcon("xp.png");
       }
     }
   }
 
-  @EventHandler
-  public void onPlayerQuit(Player player)
-  {
-    this.widgets.remove(player);
-  }
-
-  public class CustomLabel extends GenericLabel
-  {
+  public class CustomLabel extends GenericLabel  {
     private boolean check = true;
-
     public CustomLabel() {
     }
 
@@ -84,9 +78,8 @@ public final class mmoInfoXP extends MMOPlugin
       this.check = true;
     }
     private transient int tick = 0;
-    public void onTick()
-    {
-      if (tick++ % 40 == 0) {
+    public void onTick() {
+      if (tick++ % 40 == 0) {    	  
     	  DecimalFormat df = new DecimalFormat("##");    	  
     	  setText("XP: " + String.format(df.format(getScreen().getPlayer().getExp() * 100.0F)) + "%");
       }
