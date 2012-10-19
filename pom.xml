@@ -5,7 +5,7 @@
 	<name>mmoInfoXP</name>
 	<groupId>mmo.Info</groupId>
 	<artifactId>mmoInfoXP</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.4-SNAPSHOT</version>
 	<description>Adds a {exp} token to the mmoInfo token list.</description>
 	<url>http://github.com/mmoMinecraftDev/mmoInfoXP</url>
 

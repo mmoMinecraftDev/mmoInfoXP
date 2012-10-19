@@ -26,6 +26,7 @@ import mmo.Core.MMOPlugin;
 import mmo.Core.MMOPlugin.Support;
 import mmo.Core.util.EnumBitSet;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,51 +39,64 @@ import org.getspout.spoutapi.gui.Screen;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 public final class mmoInfoXP extends MMOPlugin
-  implements Listener
+implements Listener
 {
-  private HashMap<Player, CustomLabel> widgets = new HashMap();  
-  
-  @Override
-	public EnumBitSet mmoSupport(final EnumBitSet support) {
-	  support.set(Support.MMO_NO_CONFIG);
-	  support.set(Support.MMO_AUTO_EXTRACT);
+	private HashMap<Player, CustomLabel> widgets = new HashMap();  
+	private static String config_xptype = "percentage";
+
+	@Override
+	public EnumBitSet mmoSupport(final EnumBitSet support) {	  
+		support.set(Support.MMO_AUTO_EXTRACT);
 		return support;
 	}
 
-  @Override
-  public void onEnable() {
-    super.onEnable();
-    this.pm.registerEvents(this, this);
-  }
- 
-  @EventHandler
-  public void onMMOInfo(final MMOInfoEvent event)
-  {
-    if (event.isToken("xp")) {
-      SpoutPlayer player = event.getPlayer();
-      if (player.hasPermission("mmo.info.xp")) {
-        CustomLabel label = (CustomLabel)new CustomLabel().setResize(true).setFixed(true);
-        this.widgets.put(player, label);
-        event.setWidget(this.plugin, label);
-        event.setIcon("xp.png");
-      }
-    }
-  }
+	@Override
+	public void onEnable() {
+		super.onEnable();
+		this.pm.registerEvents(this, this);
+	}
 
-  public class CustomLabel extends GenericLabel  {
-    private boolean check = true;
-    public CustomLabel() {
-    }
+	@Override
+	public void loadConfiguration(final FileConfiguration cfg) {
+		config_xptype = cfg.getString("xptype", config_xptype);				
+	}
 
-    public void change() {
-      this.check = true;
-    }
-    private transient int tick = 0;
-    public void onTick() {
-      if (tick++ % 40 == 0) {    	  
-    	  DecimalFormat df = new DecimalFormat("##");    	  
-    	  setText("XP: " + String.format(df.format(getScreen().getPlayer().getExp() * 100.0F)) + "%");
-      }
-    }
-  }
+	@EventHandler
+	public void onMMOInfo(final MMOInfoEvent event)
+	{
+		if (event.isToken("xp")) {
+			SpoutPlayer player = event.getPlayer();
+			if (player.hasPermission("mmo.info.xp")) {
+				CustomLabel label = (CustomLabel)new CustomLabel().setResize(true).setFixed(true);
+				this.widgets.put(player, label);
+				event.setWidget(this.plugin, label);
+				event.setIcon("xp.png");
+			}
+		}
+	}
+
+	public class CustomLabel extends GenericLabel  {
+		private boolean check = true;
+		public CustomLabel() {
+		}
+
+		public void change() {
+			this.check = true;
+		}
+		private transient int tick = 0;
+		public void onTick() {
+			if (tick++ % 40 == 0) {    	  
+				if (config_xptype.equalsIgnoreCase("percentage")) {
+					DecimalFormat df = new DecimalFormat("##");    	  
+					setText("XP " + String.format(df.format(getScreen().getPlayer().getExp() * 100.0F)) + "%");
+				} else if (config_xptype.equalsIgnoreCase("actualnext")){
+					setText(String.format("XP " + getScreen().getPlayer().getExpToLevel() + "/" + getScreen().getPlayer().getTotalExperience() ));
+				} else if (config_xptype.equalsIgnoreCase("actual")){
+					setText(String.format("XP " + getScreen().getPlayer().getTotalExperience()));
+				} else {
+					setText(String.format("XP " + getScreen().getPlayer().getExpToLevel()));
+				}
+			}
+		}
+	}
 }
